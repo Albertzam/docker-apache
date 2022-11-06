@@ -1,0 +1,24 @@
+FROM ubuntu:18.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Moscow
+
+RUN apt-get update  && \
+      apt-get upgrade -y && \
+      apt-get install -y curl apache2 php php-cli php-common openssl
+COPY index.html /var/www/html/index.html
+
+RUN  echo "<?php phpinfo(); ?>" > /var/www/html/indexPhp.php
+
+COPY configs/ssl-params.conf /etc/apache2/conf-available/ssl-params.conf
+COPY configs/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+COPY configs/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY certificates/docker.crt /etc/ssl/certs/docker.crt
+COPY certificates/docker.key /etc/ssl/private/docker.key
+
+RUN a2enmod ssl && \
+    a2enmod headers && \
+    a2ensite default-ssl && \
+    a2enconf ssl-params
+
+CMD ["/usr/sbin/apache2ctl", "-DFOREGROUND"]
