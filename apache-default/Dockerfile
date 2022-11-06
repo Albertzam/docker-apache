@@ -9,7 +9,5 @@ RUN apt-get update  && \
 COPY index.html /var/www/html/index.html
 ENV contenido prueba
 RUN echo "$contenido" > /var/www/html/prueba.html
-# COPY 443.conf /etc/apache2/sites-available/000-default.conf
-# COPY docker.crt /var/www/docker.crt
-# COPY docker.key /var/www/docker.key
+
 CMD ["/usr/sbin/apache2ctl", "-DFOREGROUND"]
